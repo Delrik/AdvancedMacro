@@ -7,12 +7,25 @@ local iconFrames = {};
 FRAME_SIZE=48
 OFFSET=-20
 
+local function FrameOnMouseDown(self, button)
+    self:StartMoving();
+end
+
+local function FrameOnMouseUp(self, button)
+    self:StopMovingOrSizing();
+end
+
 function AdvancedMacro_CreateMainFrame()
     local AdvancedMacroFrame = CreateFrame("Frame", "AdvancedMacroFrame", UIParent, "BasicFrameTemplate");
     AdvancedMacroFrame:SetSize(400, 88);
     AdvancedMacroFrame:SetPoint("CENTER", UIParent, "CENTER", 0, 0);
     AdvancedMacroFrame.TitleText:SetText("Advanced Macro Window");
     AdvancedMacroFrame:Hide();
+    AdvancedMacroFrame:SetMovable(true);
+    AdvancedMacroFrame:EnableMouse(true);
+    AdvancedMacroFrame:RegisterForDrag("LeftButton");
+    AdvancedMacroFrame:SetScript("OnMouseDown", FrameOnMouseDown);
+    AdvancedMacroFrame:SetScript("OnMouseUp", FrameOnMouseUp);
     return AdvancedMacroFrame;
 end
 
