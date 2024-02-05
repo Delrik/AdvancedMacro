@@ -47,7 +47,7 @@ function AdvancedMacro_CreateIconFrames(ParentFrame)
         local frame = CreateFrame("Button", "AdvancedMacroIconFrame" .. i, ParentFrame, "UIPanelButtonTemplate");
         frame:SetSize(FRAME_SIZE, FRAME_SIZE);
         frame:SetPoint("TOPLEFT", ParentFrame, (i-1)*FRAME_SIZE, OFFSET);
-        local texture = frame:CreateTexture(nil, "BACKGROUND");
+        local texture = frame:CreateTexture(nil, "OVERLAY");
         texture:SetAllPoints();
         texture:SetTexture(path);
 
