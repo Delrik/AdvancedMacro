@@ -4,15 +4,24 @@ local iconPaths = {
     "Interface\\Icons\\Ability_Racial_BloodRage",
 };
 local iconFrames = {};
+
+local function IconOnClick(self, button)
+    print("Icon clicked!"); -- Example action when the icon is clicked
+    -- Add your desired actions here
+end
+
 function MyAddon_CreateIconFrames(ParentFrame)
     for i, path in ipairs(iconPaths) do
         FRAME_SIZE=48
-        local frame = CreateFrame("Frame", "AdvancedMacroIconFrame" .. i, ParentFrame);
+        local frame = CreateFrame("Button", "AdvancedMacroIconFrame" .. i, ParentFrame, "UIPanelButtonTemplate");
         frame:SetSize(FRAME_SIZE, FRAME_SIZE);
         frame:SetPoint("TOPLEFT", ParentFrame, (i-1)*FRAME_SIZE, -20);
         local texture = frame:CreateTexture(nil, "BACKGROUND");
         texture:SetAllPoints();
         texture:SetTexture(path);
+
+        frame:SetScript("OnClick", IconOnClick);
+
         iconFrames[i] = frame;
     end
 end
