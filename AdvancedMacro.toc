@@ -2,4 +2,5 @@
 ## Version: 0.0.1
 ## Author: Roman Choporov
 ## Interface: 100205
+## SavedVariables: IconFramesCache
 AdvancedMacro.lua

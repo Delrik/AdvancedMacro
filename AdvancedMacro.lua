@@ -3,6 +3,8 @@ FRAME_SIZE=48
 OFFSET=-20
 MAIN_FRAME_WIDTH=400
 MAIN_FRAME_HEIGHT=88
+DEFAULT_TEXTURE_PATH = "Interface\\Icons\\Inv_misc_food_55";
+local AdvancedMacro = {};
 
 local function FrameOnMouseDown(self, button)
     self:StartMoving();
@@ -10,6 +12,16 @@ end
 
 local function FrameOnMouseUp(self, button)
     self:StopMovingOrSizing();
+end
+
+function OnAddonLoaded(...)
+    if IconFramesCache==nil then
+        IconFramesCache={};
+    end
+    if next(iconFrames) == nil then
+        AdvancedMacro_CreateIconFrames(AdvancedMacro.Frame, IconFramesCache);
+        AdvancedMacro_CreateButtonNew(AdvancedMacro.Frame);
+    end
 end
 
 function AdvancedMacro_CreateMainFrame()
@@ -23,6 +35,9 @@ function AdvancedMacro_CreateMainFrame()
     AdvancedMacroFrame:RegisterForDrag("LeftButton");
     AdvancedMacroFrame:SetScript("OnMouseDown", FrameOnMouseDown);
     AdvancedMacroFrame:SetScript("OnMouseUp", FrameOnMouseUp);
+    AdvancedMacro.Frame = AdvancedMacroFrame;
+    AdvancedMacroFrame:RegisterEvent("ADDON_LOADED");
+    AdvancedMacroFrame:SetScript("OnEvent", OnAddonLoaded);
     return AdvancedMacroFrame;
 end
 
@@ -41,6 +56,7 @@ end
 local function SaveButtonOnClick(self, button)
     -- TODO
     print("Save button clicked!");
+    AdvancedMacro_SaveCache();
 end
 
 local function AdvancedMacro_CreateMacroFrame(ParentFrame, macro_str, index)
@@ -110,8 +126,19 @@ function AdvancedMacro_CreateIconFrames(ParentFrame, iconFramesCache)
 end
 
 local function NewButtonOnClick(self, button)
-    -- TODO
-    print("\"New\" button clicked!");
+    AdvancedMacro_CreateIconFrame(AdvancedMacro.Frame, "", DEFAULT_TEXTURE_PATH);
+    AdvancedMacro_SaveCache();
+end
+
+function AdvancedMacro_SaveCache()
+    -- list(table(macro_str, texture_path))
+    IconFramesCache = {};
+    for _, value in ipairs(iconFrames) do
+        local index = #IconFramesCache + 1;
+        IconFramesCache[index] = {};
+        IconFramesCache[index].macro_str = "123123";
+        IconFramesCache[index].texture_path = DEFAULT_TEXTURE_PATH;
+    end
 end
 
 function AdvancedMacro_CreateButtonNew(ParentFrame)
@@ -124,24 +151,5 @@ function AdvancedMacro_CreateButtonNew(ParentFrame)
     newButton:SetScript("OnClick", NewButtonOnClick)
 end
 
--- return: list(table(macro_str, texture_path))
-function AdvancedMacro_LoadCache()
-    local item1 = {};
-    item1.macro_str = "";
-    item1.texture_path = "Interface\\Icons\\Inv_misc_food_55";
-    local item2 = {};
-    item2.macro_str = "";
-    item2.texture_path = "Interface\\Icons\\Inv_misc_food_55";
-    local result = {item1, item2};
-    return result;
-end
-
-local AdvancedMacro = {};
-local AdvancedMacroFrame = AdvancedMacro_CreateMainFrame();
+AdvancedMacro_CreateMainFrame();
 AdvancedMacro_SlashCommands();
-local iconFramesCache = AdvancedMacro_LoadCache();
-AdvancedMacro_CreateIconFrames(AdvancedMacroFrame, iconFramesCache);
-AdvancedMacro_CreateButtonNew(AdvancedMacroFrame);
-
--- Assign your frame to your addon's namespace for future reference
-AdvancedMacro.Frame = AdvancedMacroFrame;
