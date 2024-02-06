@@ -54,8 +54,6 @@ function AdvancedMacro_SlashCommands()
 end
 
 local function SaveButtonOnClick(self, button)
-    -- TODO
-    print("Save button clicked!");
     AdvancedMacro_SaveCache();
 end
 
@@ -85,17 +83,19 @@ local function AdvancedMacro_CreateMacroFrame(ParentFrame, macro_str, index)
     frame.TitleText:SetText("Macro setting");
     frame:Hide()
     frame:EnableMouse(true);
+
+    iconFrames[index+1].macro = frame;
     -- TODO: Make prettier textbox
     -- Textbox
     local textBox = CreateFrame("EditBox", "MacroTextBox", frame, "LargeInputBoxTemplate");
     textBox:SetMultiLine(true); -- Allow multiline input
     textBox:SetAutoFocus(false); -- Don't automatically focus on the textbox
     textBox:EnableMouse(true); -- Allow mouse interaction with the textbox
-    -- textBox:SetScript("OnEscapePressed", function() textBox:ClearFocus(); end); -- Clear focus when escape is pressed
-
     textBox:SetPoint("TOPLEFT", frame, 0, OFFSET*2)
     textBox:SetPoint("TOPRIGHT", frame, 0, OFFSET*2)
+    textBox:SetText(macro_str);
 
+    iconFrames[index+1].text = textBox;
     -- Save button
     local saveButton = CreateFrame("Button", "SaveButton", frame, "UIPanelButtonTemplate");
     saveButton:SetSize(MAIN_FRAME_WIDTH/2, 20);
@@ -131,6 +131,7 @@ end
 
 function AdvancedMacro_CreateIconFrame(ParentFrame, macro_str, texture_path )
     local index = #iconFrames;
+    iconFrames[index+1] = {}
     local frame = CreateFrame("Button", "AdvancedMacroIconFrame" .. index, ParentFrame, "UIPanelButtonTemplate");
     frame:SetSize(FRAME_SIZE, FRAME_SIZE);
     frame:SetPoint("TOPLEFT", ParentFrame, index*FRAME_SIZE, OFFSET);
@@ -139,9 +140,7 @@ function AdvancedMacro_CreateIconFrame(ParentFrame, macro_str, texture_path )
     texture:SetTexture(texture_path);
     local macroFrame = AdvancedMacro_CreateMacroFrame(frame, macro_str, index);
     frame:SetScript("OnClick", IconFrameOnClick);
-    iconFrames[index+1]={}
     iconFrames[index+1].icon = frame;
-    iconFrames[index+1].macro = macroFrame;
 end
 
 function AdvancedMacro_CreateIconFrames(ParentFrame, iconFramesCache)
@@ -161,7 +160,7 @@ function AdvancedMacro_SaveCache()
     for _, value in ipairs(iconFrames) do
         local index = #IconFramesCache + 1;
         IconFramesCache[index] = {};
-        IconFramesCache[index].macro_str = "123123";
+        IconFramesCache[index].macro_str = value.text:GetText();
         IconFramesCache[index].texture_path = DEFAULT_TEXTURE_PATH;
     end
 end
