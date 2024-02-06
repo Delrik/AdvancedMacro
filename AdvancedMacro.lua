@@ -59,12 +59,30 @@ local function SaveButtonOnClick(self, button)
     AdvancedMacro_SaveCache();
 end
 
+local function RedrawFrames()
+    for index, frame in ipairs(iconFrames) do
+        frame.icon:SetPoint("TOPLEFT", AdvancedMacro.Frame, (index-1)*FRAME_SIZE, OFFSET);
+    end
+end
+
+local function DeleteButtonOnClick(self, button)
+    for index, value in ipairs(iconFrames) do
+        if value.macro == self:GetParent() then
+            value.icon:Hide()
+            table.remove(iconFrames, index);
+            RedrawFrames();
+            AdvancedMacro_SaveCache();
+            break;
+        end
+    end
+end
+
 local function AdvancedMacro_CreateMacroFrame(ParentFrame, macro_str, index)
     -- Frame
     local frame = CreateFrame("Frame", "MacroFrame", ParentFrame, "BasicFrameTemplate");
     frame:SetSize(MAIN_FRAME_WIDTH, MAIN_FRAME_HEIGHT*2.5);
     frame:SetPoint("TOPRIGHT", ParentFrame:GetParent(), "TOPRIGHT", MAIN_FRAME_WIDTH, 0);
-    frame.TitleText:SetText("Macro setting#" .. (index+1));
+    frame.TitleText:SetText("Macro setting");
     frame:Hide()
     frame:EnableMouse(true);
     -- TODO: Make prettier textbox
@@ -80,10 +98,17 @@ local function AdvancedMacro_CreateMacroFrame(ParentFrame, macro_str, index)
 
     -- Save button
     local saveButton = CreateFrame("Button", "SaveButton", frame, "UIPanelButtonTemplate");
-    saveButton:SetSize(MAIN_FRAME_WIDTH, 20);
+    saveButton:SetSize(MAIN_FRAME_WIDTH/2, 20);
     saveButton:SetPoint("BOTTOMLEFT", frame, 0, 0); -- Adjust position as needed
     saveButton:SetText("Save");
     saveButton:SetScript("OnClick", SaveButtonOnClick)
+
+    -- Delete button
+    local deleteButton = CreateFrame("Button", "DeleteButton", frame, "UIPanelButtonTemplate");
+    deleteButton:SetSize(MAIN_FRAME_WIDTH/2, 20);
+    deleteButton:SetPoint("TOPRIGHT", saveButton, "TOPRIGHT", MAIN_FRAME_WIDTH/2, 0); -- Adjust position as needed
+    deleteButton:SetText("Delete");
+    deleteButton:SetScript("OnClick", DeleteButtonOnClick)
 
     return frame
 end
