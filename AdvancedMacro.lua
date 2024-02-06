@@ -1,11 +1,9 @@
--- Define paths to your icons
-local iconPaths = {
-    "Interface\\Icons\\Inv_misc_food_55",
-    "Interface\\Icons\\Inv_misc_food_55",
-};
+-- list(table(macro_str, texture_path))
 local iconFrames = {};
 FRAME_SIZE=48
 OFFSET=-20
+MAIN_FRAME_WIDTH=400
+MAIN_FRAME_HEIGHT=88
 
 local function FrameOnMouseDown(self, button)
     self:StartMoving();
@@ -17,7 +15,7 @@ end
 
 function AdvancedMacro_CreateMainFrame()
     local AdvancedMacroFrame = CreateFrame("Frame", "AdvancedMacroFrame", UIParent, "BasicFrameTemplate");
-    AdvancedMacroFrame:SetSize(400, 88);
+    AdvancedMacroFrame:SetSize(MAIN_FRAME_WIDTH, MAIN_FRAME_HEIGHT);
     AdvancedMacroFrame:SetPoint("CENTER", UIParent, "CENTER", 0, 0);
     AdvancedMacroFrame.TitleText:SetText("Advanced Macro Window");
     AdvancedMacroFrame:Hide();
@@ -33,53 +31,93 @@ function AdvancedMacro_SlashCommands()
     SLASH_ADVANCEDMACRO1 = "/am"
     SLASH_ADVANCEDMACRO2 = "/advancedmacro"
     SlashCmdList["ADVANCEDMACRO"] = function(msg)
-        AdvancedMacroFrame:Show()
+        if AdvancedMacroFrame:IsVisible() then
+            AdvancedMacroFrame:Hide()
+        else
+            AdvancedMacroFrame:Show()
+        end
+    end
+end
+
+local function AdvancedMacro_CreateMacroFrame(ParentFrame, macro_str, index)
+    local frame = CreateFrame("Frame", "MacroFrame", ParentFrame, "BasicFrameTemplate");
+    frame:SetSize(MAIN_FRAME_WIDTH, MAIN_FRAME_HEIGHT);
+    frame:SetPoint("TOPRIGHT", ParentFrame:GetParent(), "TOPRIGHT", MAIN_FRAME_WIDTH, 0);
+    frame.TitleText:SetText("Macro setting#" .. (index+1));
+    frame:Hide()
+    frame:EnableMouse(true);
+    frame:RegisterForDrag("LeftButton");
+    return frame
+end
+
+local function HideMacroFrames()
+    for _, item in ipairs(iconFrames) do
+        item.macro:Hide()
     end
 end
 
 local function IconFrameOnClick(self, button)
-    -- TODO
-    print("Icon clicked!");
+    HideMacroFrames();
+    for _, item in ipairs(iconFrames) do
+        if self == item.icon then
+            item.macro:Show();
+            break;
+        end
+    end
 end
 
-function AdvancedMacro_CreateIconFrames(ParentFrame)
-    for i, path in ipairs(iconPaths) do
-        local frame = CreateFrame("Button", "AdvancedMacroIconFrame" .. i, ParentFrame, "UIPanelButtonTemplate");
-        frame:SetSize(FRAME_SIZE, FRAME_SIZE);
-        frame:SetPoint("TOPLEFT", ParentFrame, (i-1)*FRAME_SIZE, OFFSET);
-        local texture = frame:CreateTexture(nil, "OVERLAY");
-        texture:SetAllPoints();
-        texture:SetTexture(path);
+function AdvancedMacro_CreateIconFrame(ParentFrame, macro_str, texture_path )
+    local index = #iconFrames;
+    local frame = CreateFrame("Button", "AdvancedMacroIconFrame" .. index, ParentFrame, "UIPanelButtonTemplate");
+    frame:SetSize(FRAME_SIZE, FRAME_SIZE);
+    frame:SetPoint("TOPLEFT", ParentFrame, index*FRAME_SIZE, OFFSET);
+    local texture = frame:CreateTexture(nil, "OVERLAY");
+    texture:SetAllPoints();
+    texture:SetTexture(texture_path);
+    local macroFrame = AdvancedMacro_CreateMacroFrame(frame, macro_str, index);
+    frame:SetScript("OnClick", IconFrameOnClick);
+    iconFrames[index+1]={}
+    iconFrames[index+1].icon = frame;
+    iconFrames[index+1].macro = macroFrame;
+end
 
-        frame:SetScript("OnClick", IconFrameOnClick);
-
-        iconFrames[i] = frame;
+function AdvancedMacro_CreateIconFrames(ParentFrame, iconFramesCache)
+    for _,iconFrame in ipairs(iconFramesCache) do
+        AdvancedMacro_CreateIconFrame(ParentFrame, iconFrame.macro_str, iconFrame.texture_path )
     end
 end
 
 local function NewButtonOnClick(self, button)
-    -- TODO
     print("\"New\" button clicked!");
 end
 
 function AdvancedMacro_CreateButtonNew(ParentFrame)
     -- Create the "New" button
     local newButton = CreateFrame("Button", "NewButton", ParentFrame, "UIPanelButtonTemplate");
-    newButton:SetSize(400, 20);
+    newButton:SetSize(MAIN_FRAME_WIDTH, 20);
     newButton:SetPoint("TOPLEFT", ParentFrame, 0, OFFSET-FRAME_SIZE); -- Adjust position as needed
     newButton:SetText("New");
 
     newButton:SetScript("OnClick", NewButtonOnClick)
 end
 
-local AdvancedMacro = {};
+function AdvancedMacro_LoadCache()
+    local item1 = {};
+    item1.macro_str = "";
+    item1.texture_path = "Interface\\Icons\\Inv_misc_food_55";
+    local item2 = {};
+    item2.macro_str = "";
+    item2.texture_path = "Interface\\Icons\\Inv_misc_food_55";
+    local result = {item1, item2};
+    return result;
+end
 
+local AdvancedMacro = {};
 local AdvancedMacroFrame = AdvancedMacro_CreateMainFrame();
 AdvancedMacro_SlashCommands();
-AdvancedMacro_CreateIconFrames(AdvancedMacroFrame);
+local iconFramesCache = AdvancedMacro_LoadCache();
+AdvancedMacro_CreateIconFrames(AdvancedMacroFrame, iconFramesCache);
 AdvancedMacro_CreateButtonNew(AdvancedMacroFrame);
-
-
 
 -- Assign your frame to your addon's namespace for future reference
 AdvancedMacro.Frame = AdvancedMacroFrame;
