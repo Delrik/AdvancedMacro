@@ -1,4 +1,3 @@
--- list(table(macro_str, texture_path))
 local iconFrames = {};
 FRAME_SIZE=48
 OFFSET=-20
@@ -46,7 +45,6 @@ local function AdvancedMacro_CreateMacroFrame(ParentFrame, macro_str, index)
     frame.TitleText:SetText("Macro setting#" .. (index+1));
     frame:Hide()
     frame:EnableMouse(true);
-    frame:RegisterForDrag("LeftButton");
     return frame
 end
 
@@ -88,6 +86,7 @@ function AdvancedMacro_CreateIconFrames(ParentFrame, iconFramesCache)
 end
 
 local function NewButtonOnClick(self, button)
+    -- TODO
     print("\"New\" button clicked!");
 end
 
@@ -101,6 +100,7 @@ function AdvancedMacro_CreateButtonNew(ParentFrame)
     newButton:SetScript("OnClick", NewButtonOnClick)
 end
 
+-- return: list(table(macro_str, texture_path))
 function AdvancedMacro_LoadCache()
     local item1 = {};
     item1.macro_str = "";
