@@ -38,13 +38,37 @@ function AdvancedMacro_SlashCommands()
     end
 end
 
+local function SaveButtonOnClick(self, button)
+    -- TODO
+    print("Save button clicked!");
+end
+
 local function AdvancedMacro_CreateMacroFrame(ParentFrame, macro_str, index)
+    -- Frame
     local frame = CreateFrame("Frame", "MacroFrame", ParentFrame, "BasicFrameTemplate");
-    frame:SetSize(MAIN_FRAME_WIDTH, MAIN_FRAME_HEIGHT);
+    frame:SetSize(MAIN_FRAME_WIDTH, MAIN_FRAME_HEIGHT*2.5);
     frame:SetPoint("TOPRIGHT", ParentFrame:GetParent(), "TOPRIGHT", MAIN_FRAME_WIDTH, 0);
     frame.TitleText:SetText("Macro setting#" .. (index+1));
     frame:Hide()
     frame:EnableMouse(true);
+    -- TODO: Make prettier textbox
+    -- Textbox
+    local textBox = CreateFrame("EditBox", "MacroTextBox", frame, "LargeInputBoxTemplate");
+    textBox:SetMultiLine(true); -- Allow multiline input
+    textBox:SetAutoFocus(false); -- Don't automatically focus on the textbox
+    textBox:EnableMouse(true); -- Allow mouse interaction with the textbox
+    -- textBox:SetScript("OnEscapePressed", function() textBox:ClearFocus(); end); -- Clear focus when escape is pressed
+
+    textBox:SetPoint("TOPLEFT", frame, 0, OFFSET*2)
+    textBox:SetPoint("TOPRIGHT", frame, 0, OFFSET*2)
+
+    -- Save button
+    local saveButton = CreateFrame("Button", "SaveButton", frame, "UIPanelButtonTemplate");
+    saveButton:SetSize(MAIN_FRAME_WIDTH, 20);
+    saveButton:SetPoint("BOTTOMLEFT", frame, 0, 0); -- Adjust position as needed
+    saveButton:SetText("Save");
+    saveButton:SetScript("OnClick", SaveButtonOnClick)
+
     return frame
 end
 
@@ -94,7 +118,7 @@ function AdvancedMacro_CreateButtonNew(ParentFrame)
     -- Create the "New" button
     local newButton = CreateFrame("Button", "NewButton", ParentFrame, "UIPanelButtonTemplate");
     newButton:SetSize(MAIN_FRAME_WIDTH, 20);
-    newButton:SetPoint("TOPLEFT", ParentFrame, 0, OFFSET-FRAME_SIZE); -- Adjust position as needed
+    newButton:SetPoint("BOTTOMLEFT", ParentFrame, 0, 0); -- Adjust position as needed
     newButton:SetText("New");
 
     newButton:SetScript("OnClick", NewButtonOnClick)
