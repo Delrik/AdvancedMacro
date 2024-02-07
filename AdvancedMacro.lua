@@ -77,17 +77,17 @@ end
 
 local function AdvancedMacro_CreateMacroFrame(ParentFrame, macro_str, index)
     -- Frame
-    local frame = CreateFrame("Frame", "MacroFrame", ParentFrame, "BasicFrameTemplate");
+    local frame = CreateFrame("Frame", "AdvancedMacroFrame", ParentFrame, "BasicFrameTemplate");
     frame:SetSize(MAIN_FRAME_WIDTH, MAIN_FRAME_HEIGHT*2.5);
-    frame:SetPoint("TOPRIGHT", ParentFrame:GetParent(), "TOPRIGHT", MAIN_FRAME_WIDTH, 0);
-    frame.TitleText:SetText("Macro setting");
+    frame:SetPoint("TOPLEFT", ParentFrame:GetParent(), "TOPRIGHT", 0, 0);
+    frame.TitleText:SetText("Advanced macro setting");
     frame:Hide()
     frame:EnableMouse(true);
 
     iconFrames[index+1].macro = frame;
     -- TODO: Make prettier textbox
     -- Textbox
-    local textBox = CreateFrame("EditBox", "MacroTextBox", frame, "LargeInputBoxTemplate");
+    local textBox = CreateFrame("EditBox", "AdvancedMacroTextBox", frame, "LargeInputBoxTemplate");
     textBox:SetMultiLine(true); -- Allow multiline input
     textBox:SetAutoFocus(false); -- Don't automatically focus on the textbox
     textBox:EnableMouse(true); -- Allow mouse interaction with the textbox
@@ -113,7 +113,7 @@ local function AdvancedMacro_CreateMacroFrame(ParentFrame, macro_str, index)
     return frame
 end
 
-local function HideMacroFrames()
+local function Advancedmacro_HideMacroFrames()
     for _, item in ipairs(iconFrames) do
         item.macro:Hide()
     end
